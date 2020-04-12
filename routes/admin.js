@@ -77,7 +77,7 @@ async function scrapeData(url, page) {
     }
 }
 //Get routes start here'
-router.get('/', (req,res)=>{
+router.get('/', (req, res) => {
     res.render('./admin/index')
 })
 
@@ -98,7 +98,9 @@ router.get("/product/new", isAuthenticatedUser, async (req, res) => {
     try {
         let url = req.query.search;
         if (url) {
-            browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+            browser = await puppeteer.launch({
+                args: ['--no-sandbox']
+            });
             const page = await browser.newPage();
             let result = await scrapeData(url, page);
             let productData = {
@@ -300,7 +302,7 @@ router.post('/product/new', isAuthenticatedUser, (req, res) => {
             res.redirect("/product/new");
         });
 });
-router.post('/update', isAuthenticatedUser, async(req, res) => {
+router.post('/update', isAuthenticatedUser, async (req, res) => {
     try {
         res.render('./admin/update', {
             message: 'update started'
@@ -321,7 +323,9 @@ router.post('/update', isAuthenticatedUser, async(req, res) => {
                         })
                         .then(products => {})
                 }
-                browser = await puppeteer.launch({ args: ['--no-sandbox'] })
+                browser = await puppeteer.launch({
+                    args: ['--no-sandbox']
+                })
                 const page = await browser.newPage()
                 for (let i = 0; i < products.length; i++) {
                     let result = await scrapeData(products[i].url, page)
@@ -330,7 +334,7 @@ router.post('/update', isAuthenticatedUser, async(req, res) => {
                         }, {
                             $set: {
                                 'title': result.title,
-                                'newprice':'$'+result.price,
+                                'newprice': '$' + result.price,
                                 'newstock': result.stock,
                                 'updatestatus': 'Updated'
                             }
@@ -353,24 +357,26 @@ router.post('/update', isAuthenticatedUser, async(req, res) => {
 
 
 //delete routes start here 
-router.delete('/delete/product/:id', isAuthenticatedUser, (req,res) =>{
-    let searchQuery= {_id : req.params.id }
+router.delete('/delete/product/:id', isAuthenticatedUser, (req, res) => {
+    let searchQuery = {
+        _id: req.params.id
+    }
 
 
     Product.deleteOne(searchQuery)
-    .then (product=>{
-        req.flash('success_msg', 'Product delete successfully');
-        res.redirect('/dashboard');
-    })
-    .catch(err =>{
-        req.flash('error_msg', 'ERROR: ' + err);
-        res.redirect('/dashboard');
-    })
+        .then(product => {
+            req.flash('success_msg', 'Product delete successfully');
+            res.redirect('/dashboard');
+        })
+        .catch(err => {
+            req.flash('error_msg', 'ERROR: ' + err);
+            res.redirect('/dashboard');
+        })
 })
 
 
 
-router.get('*',(req,res)=>{
+router.get('*', (req, res) => {
     res.render('./admin/notfound')
 })
 
