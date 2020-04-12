@@ -59,10 +59,10 @@ async function scrapeData(url, page) {
         let stock = "";
 
         if (!seller.includes("Walmart") ||
-            outofStock.includes("Out of Stock") ||
+            outofStock.includes("Out of stock") ||
             deliveryNotAvailable.includes("Delivery Not Available")
         ) {
-            stock = "Out of Stock";
+            stock = "Out of stock";
         } else {
             stock = "In stock";
         }
@@ -98,9 +98,7 @@ router.get("/product/new", isAuthenticatedUser, async (req, res) => {
     try {
         let url = req.query.search;
         if (url) {
-            browser = await puppeteer.launch({
-                headless: true
-            });
+            browser = await puppeteer.launch({ args: ['--no-sandbox'] });
             const page = await browser.newPage();
             let result = await scrapeData(url, page);
             let productData = {
@@ -323,9 +321,7 @@ router.post('/update', isAuthenticatedUser, async(req, res) => {
                         })
                         .then(products => {})
                 }
-                browser = await puppeteer.launch({
-                    headless: false
-                })
+                browser = await puppeteer.launch({ args: ['--no-sandbox'] })
                 const page = await browser.newPage()
                 for (let i = 0; i < products.length; i++) {
                     let result = await scrapeData(products[i].url, page)
